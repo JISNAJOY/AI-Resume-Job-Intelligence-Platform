@@ -1,17 +1,25 @@
 
 from openai import OpenAI
 from app.config import OPENAI_API_KEY, MODEL_NAME
+import json
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
-completion = client.chat.completions.create(
-model=MODEL_NAME,
-messages=[
-{
-"role": "user",
-"content": "Write a one-sentence bedtime story about a unicorn."
-}
-]
-)
+def extract_structured_data(system_prompt: str, text: str):
+    completion = client.chat.completions.create(
+     model=MODEL_NAME,
+        temperature=0.2,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": text}
+        ]
+    )
 
-print(completion.choices[0].message.content)
+    content = completion.choices[0].message.content
+
+    try:
+        parsed = json.loads(content)
+    except:
+        raise ValueError("Invalid JSON returned by model")
+
+    return parsed, completion.usage
