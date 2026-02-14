@@ -20,3 +20,12 @@ async def analyze(
     resume_data, usage1 = extract_structured_data(system_prompt, resume_text)
     job_data, usage2 = extract_structured_data(system_prompt, job_description)
 
+ # Skill Matching
+    resume_skills = combine_skills(resume_data)
+    job_skills = combine_skills(job_data)
+
+    match_score, missing, strengths = calculate_skill_match(
+        resume_skills, job_skills
+    )
+
+
