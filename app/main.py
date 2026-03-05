@@ -1,7 +1,10 @@
 from fastapi import FastAPI, UploadFile, File, Form
 from app.llm_service import extract_structured_data
-from app.models import MatchResponse
+from app.embedding_service import get_embedding, cosine_similarity
+from app.model import MatchResponse
 from pathlib import Path
+from app.utils import combine_skills
+from app.matcher import calculate_skill_match
 
 app = FastAPI(title="AI Resume Intelligence API")
 
@@ -15,12 +18,12 @@ async def analyze(
     resume: UploadFile = File(...), 
     job_description: str = Form(...)
 ):
-
- # LLM Extraction
+    resume_text = (await resume.read()).decode("utf-8")
+    # LLM Extraction
     resume_data, usage1 = extract_structured_data(system_prompt, resume_text)
     job_data, usage2 = extract_structured_data(system_prompt, job_description)
 
- # Skill Matching
+    # Skill Matching
     resume_skills = combine_skills(resume_data)
     job_skills = combine_skills(job_data)
 
@@ -34,5 +37,15 @@ async def analyze(
 
     similarity = cosine_similarity(resume_embedding, job_embedding)
 
+    total_tokens = usage1.total_tokens + usage2.total_tokens
 
+    return {
+        "match_score": match_score,
+        "embedding_similarity": round(similarity, 3),
+        "missing_skills": missing,
+        "strengths": strengths,
+        "token_usage": {
+            "total_tokens": total_tokens
+        }
+    }
 
