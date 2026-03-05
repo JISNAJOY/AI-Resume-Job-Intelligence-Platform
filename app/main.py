@@ -8,7 +8,7 @@ from app.matcher import calculate_skill_match
 
 app = FastAPI(title="AI Resume Intelligence API")
 
-prompt_path = Path("prompts/extraction_prompt.txt")
+prompt_path = Path("prompts/resume_prompt.txt")
 system_prompt = prompt_path.read_text()
 
 @app.post("/analyze", response_model=MatchResponse)
