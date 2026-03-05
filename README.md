@@ -1,4 +1,4 @@
-# 🤖 LLM Resume Analyzer API
+# 🤖 AI-Resume-Job-Intelligence-Platform
 
 An AI-powered FastAPI backend that analyzes resumes against job descriptions and calculates a structured match score using LLM-based skill extraction and semantic similarity.
 
